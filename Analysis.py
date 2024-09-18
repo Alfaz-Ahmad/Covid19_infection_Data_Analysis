@@ -21,15 +21,17 @@ def maximum_infection(county):
     print(filtered_covid_data.loc[county].diff().max())
 
 
-# Initializing the dataset
+# Data Importing
 covid_data_csv = pd.read_csv("Datasets/covid19_Confirmed_dataset.csv")   # Importing the csv dataset
 # print(covid_data_csv.head())          # print the first 5 values of dataset (default)
 # print(covid_data_csv.shape)           # Describe the shape of the data set
 
+# Data Cleaning
 covid_data_csv.drop(["Lat", "Long", "Province/State"], axis=1, inplace=True)     # Removing the useless columns inplace
 # print(covid_data_csv.head())          # print the first 5 values of dataset (default)
 # print(covid_data_csv.shape)           # Describe the shape of the data set
 
+# Data Manipulation
 filtered_covid_data = covid_data_csv.groupby("Country/Region").sum()       # Grouping the dataset according to countries
 # print(filtered_covid_data.head())          # print the first 5 values of dataset (default)
 # print(filtered_covid_data.shape)           # Describe the shape of the data set
@@ -39,9 +41,10 @@ filtered_covid_data = covid_data_csv.groupby("Country/Region").sum()       # Gro
 
 plt.figure(figsize=(12, 6))
 
-
+# Data Visualization
 # Plot the graph of the Total covid cases vs Date
 plt.subplot(1, 2, 1)
+plt.title("Cumulative cases vs Date")
 filtered_covid_data.loc["India"].plot()                 # India
 filtered_covid_data.loc["China"].plot()                 # China
 filtered_covid_data.loc["United Kingdom"].plot()        # United Kingdom
@@ -52,6 +55,7 @@ plt.legend()
 
 # Plot the graph of the Cases of covid per day vs Date
 plt.subplot(1, 2, 2)
+plt.title("Total cases vs Date")
 filtered_covid_data.loc["India"].diff().plot()              # India
 filtered_covid_data.loc["China"].diff().plot()              # China
 filtered_covid_data.loc["United Kingdom"].diff().plot()     # United Kingdom
@@ -66,6 +70,7 @@ plt.show()
 # maximum_infection("China")
 # maximum_infection("United Kingdom")
 
+# Data Manipulation
 # Adding a column : maximum number recorded on single date
 Countries = all_countries(filtered_covid_data.index)
 max_infection_rate = []
@@ -85,15 +90,18 @@ covid_data = pd.DataFrame(filtered_covid_data["max_infection_rate"])
 
 # Working with the World Happiness Report, Manipulating the data according to owr need
 
+# Data Importing
 whr_data_csv = pd.read_csv("Datasets/worldwide_happiness_report.csv")
 # print(whr_data_csv.head())
 # print(whr_data_csv.shape)
 
+# Data Cleaning
 # Removing useless columns
 whr_data_csv.drop(["Overall rank", "Score", "Generosity", "Perceptions of corruption"], axis=1, inplace=True)
 # print(whr_data_csv.head())
 # print(whr_data_csv.shape)
 
+# Data Manipulation
 whr_data_csv.set_index("Country or region", inplace=True)
 # print(whr_data_csv.head())
 # print(whr_data_csv.shape)
@@ -104,13 +112,14 @@ joined_data = covid_data.join(whr_data_csv, how="inner")
 # print(final_data.head())
 # print(final_data.shape)
 
+# Data Importing
 # Importing the data of deaths due to covid19
 death_data_csv = pd.read_csv("Datasets/covid19_deaths_dataset.csv")
 # print(death_data_csv.head())
 # print(death_data_csv.shape)
 
+# Data Cleaning
 # Filtering the data
-
 death_data_csv.drop(["Lat", "Long", "Province/State"], axis=1, inplace=True)         # Removing useless columns
 # print(death_data_csv.head())
 # print(death_data_csv.shape)
@@ -119,26 +128,27 @@ filtered_death_data = death_data_csv.groupby("Country/Region").sum()        # Gr
 # print(filtered_data_csv.head())
 # print(filtered_data_csv.shape)
 
+# Data Visualization
 # Plotting Graphs
-
 plt.figure(figsize=(12, 6))
 
 plt.subplot(1, 2, 1)
 filtered_death_data.loc["India"].plot()                 # India
 filtered_death_data.loc["China"].plot()                 # China
 filtered_death_data.loc["United Kingdom"].plot()        # United Kingdom
-plt.title("Total Deaths vs Date")
+plt.title("Cumulative Deaths vs Date")
 plt.legend()
 
 plt.subplot(1, 2, 2)
 filtered_death_data.loc["India"].diff().plot()              # India
 filtered_death_data.loc["China"].diff().plot()              # China
 filtered_death_data.loc["United Kingdom"].diff().plot()     # United Kingdom
-plt.title("Deaths vs Date")
+plt.title("Total Deaths vs Date")
 plt.legend()
 
 plt.show()
 
+# Data Manipulation
 # Adding max_death_rate column in the joined_data
 max_death_rate = []
 for i in Countries:
@@ -157,12 +167,12 @@ final_data = covid_death.join(joined_data, how="inner")
 # print(final_data.head())
 # print(final_data.shape)
 
+# Data Visualization
 # Evaluating the relationship between each parameter of the data set
 correlation_matrix = final_data.corr()          # Gives the correlation matrix
 sns.heatmap(final_data.corr(), annot=True, cmap='coolwarm', fmt=".2f", linewidths=0.5)    # Visualize Correlation matrix
 plt.title('Correlation Matrix')
 plt.show()
-
 
 # Data Relation Visualization
 plt.figure(figsize=(16, 8))
@@ -172,7 +182,6 @@ plt.subplot(2, 2, 1)
 plt.title("GDP per capita vs Maximum infection rate")
 x = final_data["GDP per capita"]
 y = final_data["max_infection_rate"]
-sns.scatterplot(x=x, y=np.log(y))
 sns.regplot(x=x, y=np.log(y))
 
 # Plotting Social support vs Maximum infection rate
@@ -180,7 +189,6 @@ plt.subplot(2, 2, 2)
 plt.title("Social support vs Maximum infection rate")
 x = final_data["Social support"]
 y = final_data["max_infection_rate"]
-sns.scatterplot(x=x, y=np.log(y))
 sns.regplot(x=x, y=np.log(y))
 
 # Plotting Healthy life expectancy vs Maximum infection rate
@@ -188,7 +196,6 @@ plt.subplot(2, 2, 3)
 plt.title("Healthy life expectancy vs Maximum infection rate")
 x = final_data["Healthy life expectancy"]
 y = final_data["max_infection_rate"]
-sns.scatterplot(x=x, y=np.log(y))
 sns.regplot(x=x, y=np.log(y))
 
 # Plotting Freedom to make life choices vs Maximum infection rate
@@ -196,7 +203,6 @@ plt.subplot(2, 2, 4)
 plt.title("Freedom to make life choices vs Maximum infection rate")
 x = final_data["Freedom to make life choices"]
 y = final_data["max_infection_rate"]
-sns.scatterplot(x=x, y=np.log(y))
 sns.regplot(x=x, y=np.log(y))
 
 plt.tight_layout()
@@ -205,37 +211,33 @@ plt.show()
 # Data Relation Visualization
 plt.figure(figsize=(16, 8))
 
-# Plotting GDP vs Maximum infection rate
+# Plotting GDP vs Maximum death rate
 plt.subplot(2, 2, 1)
 plt.title("GDP per capita vs Maximum Death rate")
 x = final_data["GDP per capita"]
 y = final_data["max_death_rate"]
-sns.scatterplot(x=x, y=np.log(y))
-sns.regplot(x=x, y=y)
+sns.regplot(x=x, y=np.sqrt(y))
 
-# Plotting Social support vs Maximum infection rate
+# Plotting Social support vs Maximum death rate
 plt.subplot(2, 2, 2)
 plt.title("Social support vs Maximum Death rate")
 x = final_data["Social support"]
 y = final_data["max_death_rate"]
-sns.scatterplot(x=x, y=np.log(y))
-sns.regplot(x=x, y=y)
+sns.regplot(x=x, y=np.sqrt(y))
 
-# Plotting Healthy life expectancy vs Maximum infection rate
+# Plotting Healthy life expectancy vs Maximum death rate
 plt.subplot(2, 2, 3)
 plt.title("Healthy life expectancy vs Maximum Death rate")
 x = final_data["Healthy life expectancy"]
 y = final_data["max_death_rate"]
-sns.scatterplot(x=x, y=np.log(y))
-sns.regplot(x=x, y=y)
+sns.regplot(x=x, y=np.sqrt(y))
 
-# Plotting Freedom to make life choices vs Maximum infection rate
+# Plotting Freedom to make life choices vs Maximum death rate
 plt.subplot(2, 2, 4)
 plt.title("Freedom to make life choices vs Maximum Death rate")
 x = final_data["Freedom to make life choices"]
 y = final_data["max_death_rate"]
-sns.scatterplot(x=x, y=np.log(y))
-sns.regplot(x=x, y=y)
+sns.regplot(x=x, y=np.sqrt(y))
 
 plt.tight_layout()
 plt.show()
